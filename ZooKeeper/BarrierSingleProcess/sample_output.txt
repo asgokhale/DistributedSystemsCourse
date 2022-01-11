@@ -1,0 +1,118 @@
+Demo program for ZooKeeper-based Barrier Sync
+=================================
+Server IP: 127.0.0.1, Port: 2181; Path = /barrier, NumClients = 5
+=================================
+Driver::init_driver -- instantiate zk obj: hosts = 127.0.0.1:2181
+Driver::init_driver -- state = LOST
+Driver::run_driver -- connect with server
+Driver::run_driver -- state = CONNECTED
+Driver::run_driver -- create a znode for barrier
+Driver::run -- children watcher: num childs = 0
+Driver::child_change_watcher - setting new value for children = 0
+Driver::run_driver -- start the client app threads
+AppThread::run - Client Thread0 now running and opening connection to zookeeper
+App::run -- state = LOST
+AppThread::run - Client Thread1 now running and opening connection to zookeeper
+App::run -- state = LOST
+AppThread::run - Client Thread2 now running and opening connection to zookeeper
+App::run -- state = LOST
+AppThread::run - Client Thread3 now running and opening connection to zookeeper
+App::run -- state = LOST
+Driver::run_driver -- wait for the client app threads to terminate
+AppThread::run - Client Thread4 now running and opening connection to zookeeper
+App::run -- state = LOST
+AppThread::run - parent znode is set
+AppThread::run - parent znode is set
+AppThread::DataChangeWatcher - data = 0, stat = ZnodeStat(czxid=424, mzxid=425, ctime=1519409260851, mtime=1519409260855, version=1, cversion=2, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=2, pzxid=430)
+AppThread Thread0 barrier not reached yet
+Driver::run -- children watcher: num childs = 2
+AppThread::DataChangeWatcher - data = 0, stat = ZnodeStat(czxid=424, mzxid=425, ctime=1519409260851, mtime=1519409260855, version=1, cversion=2, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=2, pzxid=430)
+AppThread Thread1 barrier not reached yet
+Driver::child_change_watcher - setting new value for children = 2
+AppThread::run - parent znode is set
+AppThread Thread0 found parent znode value = 0, stat = ZnodeStat(czxid=424, mzxid=425, ctime=1519409260851, mtime=1519409260855, version=1, cversion=2, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=2, pzxid=430)
+AppThread Thread0 barrier not reached yet
+AppThread::DataChangeWatcher - data = 2, stat = ZnodeStat(czxid=424, mzxid=432, ctime=1519409260851, mtime=1519409260888, version=2, cversion=3, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=3, pzxid=433)
+AppThread::run - parent znode is set
+AppThread Thread0 found parent znode value = 2, stat = ZnodeStat(czxid=424, mzxid=432, ctime=1519409260851, mtime=1519409260888, version=2, cversion=3, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=3, pzxid=433)
+AppThread Thread0 barrier not reached yet
+AppThread::DataChangeWatcher - data = 2, stat = ZnodeStat(czxid=424, mzxid=432, ctime=1519409260851, mtime=1519409260888, version=2, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+Driver::run -- children watcher: num childs = 4
+AppThread::DataChangeWatcher - data = 2, stat = ZnodeStat(czxid=424, mzxid=432, ctime=1519409260851, mtime=1519409260888, version=2, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+ AppThread Thread0 found parent znode value = 2, stat = ZnodeStat(czxid=424, mzxid=432, ctime=1519409260851, mtime=1519409260888, version=2, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread0 barrier not reached yet
+AppThread Thread1 found parent znode value = 2, stat = ZnodeStat(czxid=424, mzxid=432, ctime=1519409260851, mtime=1519409260888, version=2, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread1 barrier not reached yet
+Driver::child_change_watcher - setting new value for children = 4
+AppThread Thread3 barrier not reached yet
+AppThread::DataChangeWatcher - data = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread0 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)AppThread::DataChangeWatcher - data = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread2 barrier not reached yet
+
+AppThread Thread0 barrier not reached yet
+AppThread::DataChangeWatcher - data = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread3 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread3 barrier not reached yet
+AppThread::DataChangeWatcher - data = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread3 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread3 barrier not reached yet
+AppThread Thread2 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread2 barrier not reached yet
+AppThread Thread0 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread0 barrier not reached yet
+AppThread Thread1 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread1 barrier not reached yet
+AppThread::run - parent znode is set
+AppThread Thread3 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread3 barrier not reached yet
+AppThread Thread3 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread3 barrier not reached yet
+AppThread Thread2 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=4, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=4, pzxid=434)
+AppThread Thread2 barrier not reached yet
+AppThread Thread1 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread1 barrier not reached yet
+AppThread Thread0 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread0 barrier not reached yet
+Driver::run -- children watcher: num childs = 5
+Driver::child_change_watcher - setting new value for children = 5
+AppThread Thread2 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread2 barrier not reached yet
+AppThread Thread0 found parent znode value = 4, stat = ZnodeStat(czxid=424, mzxid=435, ctime=1519409260851, mtime=1519409260904, version=3, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread0 barrier not reached yet
+AppThread::DataChangeWatcher - data = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread: Thread4, barrier is reached
+AppThread Thread4 has reached the barrier and so we disconnect from zookeeper
+AppThread Thread1 found parent znode value = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread1 barrier not reached yet
+AppThread Thread3 found parent znode value = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread3 barrier not reached yet
+ AppThread::DataChangeWatcher - data = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread: Thread0, barrier is reached
+AppThread Thread4: Bye Bye 
+AppThread::DataChangeWatcher - data = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread: Thread1, barrier is reached
+AppThread::DataChangeWatcher - data = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread: Thread3, barrier is reached
+AppThread::DataChangeWatcher - data = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread: Thread2, barrier is reached
+AppThread Thread2 found parent znode value = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread2 has reached the barrier and so we disconnect from zookeeper
+AppThread Thread3 found parent znode value = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread3 has reached the barrier and so we disconnect from zookeeper
+AppThread Thread1 found parent znode value = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread1 has reached the barrier and so we disconnect from zookeeper
+AppThread Thread0 found parent znode value = 5, stat = ZnodeStat(czxid=424, mzxid=438, ctime=1519409260851, mtime=1519409260934, version=4, cversion=5, aversion=0, ephemeralOwner=0, dataLength=1, numChildren=5, pzxid=437)
+AppThread Thread0 has reached the barrier and so we disconnect from zookeeper
+AppThread Thread2: Bye Bye 
+AppThread Thread3: Bye Bye 
+AppThread Thread0: Bye Bye 
+AppThread Thread1: Bye Bye 
+Driver::run_driver -- now remove the znode /barrier
+Driver::run -- children watcher: num childs = 4
+Driver::child_change_watcher - setting new value for children = 4
+Driver::run -- children watcher: num childs = 3
+Driver::child_change_watcher - setting new value for children = 3
+Driver::run -- children watcher: num childs = 1
+Driver::child_change_watcher - setting new value for children = 1
+Driver::run_driver -- disconnect and close
+Driver::run_driver -- Bye Bye

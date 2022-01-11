@@ -1,0 +1,89 @@
+Vanderbilt University
+Author: Aniruddha Gokhale
+Course: CS6381, Distributed Systems Principles
+Created: Spring 2018
+
+This directory contains a mininet topology generation logic that
+enables us to build large and complex topologies. At this time, we are
+able to create independent networks (with their subnets), independent
+LANs within the networks, multiple switches connected in linear
+fashion within a LAN, and multiple hosts under each host. The
+following is the usage:
+
+usage: mininet_main.py [-h] [-n NUMNETWORKS] [-l NUMLANS] [-r NUMSWITCHES]
+                       [-d DEPTH] [-f FANOUT] [-c] [-b BROKERIP] [-p NUMPUBS]
+                       [-s NUMSUBS]
+                       pubdata subdata
+
+positional arguments:
+  pubdata               CSV file indicating publisher characteristics
+  subdata               CSV file indicating subscriber characteristics
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -n NUMNETWORKS, --numNetworks NUMNETWORKS
+                        Number of independent autonomous networks each
+                        projecting one router
+  -l NUMLANS, --numLANs NUMLANS
+                        Number of independent LANs per network, default 1
+  -r NUMSWITCHES, --numSwitches NUMSWITCHES
+                        Number of switches in a linear topology LAN, default 1
+  -d DEPTH, --depth DEPTH
+                        Tree depth, default 1 (which makes it linear else a
+                        tree)
+  -f FANOUT, --fanout FANOUT
+                        Fanout per switch, default 2
+  -c, --controller      Presence of -c implies Remote (POX) else default
+                        controller is chosen
+  -b BROKERIP, --brokerIP BROKERIP
+                        Broker's IP address, default 10.0.0.1
+  -p NUMPUBS, --numPubs NUMPUBS
+                        Number of publishers (producers), default 1
+  -s NUMSUBS, --numSubs NUMSUBS
+                        Number of subscribers (consumers), default 1
+
+
+For now, do not worry about the required positional arguments. Just
+use the supplied files as they are.
+
+**************************************
+Always cleanup before doing anything
+**************************************
+sudo mn -c
+
+********************************************************************
+// The below will create 3 networks; each network will have 3 LANs;
+// there will be 2 switches per LAN; each switch will have 3 hosts
+// for a total of 3*3*2*3 = 54 hosts in the total topology
+// subnets are automatically generated using random numbers.
+//
+
+prompt> sudo python mininet.py -n 3 -l 3 -r 2 -f 3 pubdata.csv subdata.csv
+
+
+// There will be a top-level switch called s0 which will link all the
+// top-level routers r1, r2, ...
+// LANs are named with their router prefix followed by l1, l2 ...
+// So for example, you will have r1l1, r1l2, ...
+// Similarly hosts will be fully qualified like this: r2l3s1h3 =>
+// this is host h3 under switch s1 of LAN 3 under router r2.
+//
+// You can manually place your publishers, subscribers and the broker
+// on the hosts of your choice. In a future version of this code,
+// we will automate the process.
+//
+// The above command will create a file called "routes.sh" which
+// you will need to source on the mininet prompt
+
+mininet> source routes.sh
+
+// after that you can try pinging all hosts from all hosts using the
+// command
+
+mininet> pingall
+
+**************************************
+Always cleanup after doing anything
+**************************************
+sudo mn -c
+

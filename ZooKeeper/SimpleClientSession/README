@@ -1,0 +1,15 @@
+Demonstrates a simple client server session with ZooKeeper using programmatic
+API. This will be useful for the programming assignment.
+
+Make sure to have started the ZooKeeper server before invoking the client as follows:
+
+ shell prompt>    <your Zookeeper installation dir>/bin/zkServer.sh start
+
+Client is to be started as follows:
+
+python3 zkclient.py [-a <ip addr of server>] [-p <port that server listens on>]
+
+Where the IP address and port num are optional. By default localhost is taken
+as the IP address and 2181 is the port number.
+
+We can easily run this code inside of mininet also.

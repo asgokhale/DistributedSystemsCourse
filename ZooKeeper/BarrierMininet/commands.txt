@@ -1,0 +1,5 @@
+h3 python zkbarrier_client.py -a 10.0.0.1 C1 &> h3.out &
+h4 python zkbarrier_client.py -a 10.0.0.1 C2 &> h4.out &
+h5 python zkbarrier_client.py -a 10.0.0.1 C3 &> h5.out &
+h6 python zkbarrier_client.py -a 10.0.0.1 C4 &> h6.out &
+h7 python zkbarrier_client.py -a 10.0.0.1 C5 &> h7.out &

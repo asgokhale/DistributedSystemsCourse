@@ -1,0 +1,119 @@
+This directory contains sample code taken from the Kademlia github repo and
+modified to suit our purpose.  Additionally, we also show how to run this code
+on a mininet-emulated network.  Here we show a specific topology but similar
+examples can be created for other topologies.
+
+This code base can be executed in multiple different ways. We show how to
+run this starting with everything on a single machine.  Note that by default, each
+DHT node listens on port 8468 and assumes it is joining a pre-existing DHT ring.
+
+An additional subfolder for Docker-Kubernetes related files is maintained in
+this directory.
+
+------------------------------------------------------------------------------------------------------------
+(1) Single machine execution with localhost as IP address and different ports
+------------------------------------------------------------------------------------------------------------
+
+Since each DHT node must listen on a port, we cannot reuse the same port for
+each node running on the same machine. To that end, we provide the -o flag to
+override the port each node uses.  All nodes will talk to each other via the "localhost"
+IP address.
+
+To start the first node, simply do the following in a shell:
+
+   python3 kademlia_bootstrap.py -c
+
+To join existing DHT, in a new shell do the following (and you can do this
+as many times as you want the DHT ring to grow):
+
+   python3 kademlia_bootstrap.py -i localhost -o <your overriden port>
+   (and you can also give a -p <port> if you want to join one of the previously
+   bootstrapped DHT nodes that used a port other than the default) 
+
+To set a value (you must override the port)
+
+   python3 kademlia_set.py -i localhost -o <some diff port than one used> key value
+
+To retrieve a value (you must override the port)
+
+   python3 kademlia_get.py -i localhost -o <some diff port than one used> key
+
+-----------------------------------------------------------------------------------------
+(2) Single machine execution with mininet-emulated network
+-----------------------------------------------------------------------------------------
+If we want to have the ability to use the default port for every DHT node
+and also have the illusion of different IP addresses (and not be constrained to
+localhost), then using mininet is our next best option on a laptop.
+
+Suppose we create a network topology in mininet as follows:
+        sudo mn -x --topo=tree,depth=2,fanout=2
+
+this will create four hosts (h1, h2, h3 and h4) with three switches (s1, s2, s3).
+By default, the IP addresses assigned to the hosts will be 10.0.0.1 (for h1),
+10.0.0.2 (for h2), 10.0.0.3 (for h3) and 10.0.0.4 (for h4)
+
+Since the execution has blocking semantics, I recommend opening an Xterm on
+each host either by providing the -x option to the mn command as shown above
+or manually starting an xterm for each host (e.g., xterm h1 on the mininet> prompt
+to start xterm on host h1, and so on)
+
+Say we create the first DHT node on host h1 (in its xterm shell) as follows:
+
+    python3 kademlia_bootstrap.py -c
+
+To join the existing node, in the xterm of another host (such as h2, h3 and h4), do
+
+   python3 kademlia_bootstrap.py -i 10.0.0.1
+
+   (note that depending on which node is already in the ring, you can use
+    any of the 10.0.0.x addresses to join)
+
+To set a value (you must override the port since we are likely to execute these
+commands from one of the existing hosts; if not, then create additional hosts in
+your topology to serve as hosts used for set/get. Otherwise I am assuming that you
+are executing this command on the mininet prompt or creaing another xterm. Say
+I am invoking this on host h4 using host h1 is my bootstrap node)
+
+   mininet> h4 python3 kademlia_set.py -i 10.0.0.1 -o <some diff port than the one we used for the DHT node itself> key value
+
+To retrieve a value (you must override the port - see comments above. Say I am invoking
+this request from h3 on h2 as our bootstrap node)
+
+   mininet> h3 python3 kademlia_get.py -i 10.0.02 -o <some diff port than one we used for the DHT node itself> key
+
+-----------------------------------------------------------------------------------------
+(3) Execution on different physical or virtual machines
+-----------------------------------------------------------------------------------------
+If you intend to use individual physical or virtual machines that you have 
+to run one DHT node each, then this is the simplest way as there will be no
+conflicts and default ports can be used without any issue.
+
+To create the first node, open a shell on that machine and do
+
+   python3 kademlia_bootstrap.py -c
+
+To join existing DHT, in a shell on another machine do the following (and
+do the same on every machine you have):
+
+   python3 kademlia_bootstrap.py -i <IP address of any machine on which DHT is already instantiated>
+
+If you have more machines than what you used for DHT creation, then we don't
+have to worry about port conflicts. Otherwise if you are reusing one of the machines
+to also do set/get, you must override the port. Here I am assuming you have more
+machines at your disposal
+
+To set a value
+   python3 kademlia_set.py -i <IP addr of a DHT node machine> key value
+
+To get a value
+   python3 kademlia_get.py -i <IP addr of a DHT node machine> key
+
+------------------------------------------------------------------------------------------------
+(4) Execution in Docker containers within a Kubernetes Cluster pods
+------------------------------------------------------------------------------------------------
+
+We plan to use this approach for our assignments because doing so gives
+us the power to scale to large DHT rings that can be deployed by K8s
+on the cluster of machines that we have in our cloud. 
+
+

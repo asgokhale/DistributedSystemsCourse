@@ -1,0 +1,66 @@
+// Author: Aniruddha Gokhale, Vanderbilt University
+// Created: Oct 2019
+// Modified: Feb 2021
+//
+
+Purpose of this sample code is to show how to use Flatbuffers with ZeroMQ.
+This way we can demonstrate how complex user-defined types can be
+serialized using Flatbuffers and then used by ZMQ to communicate between
+endpoints.
+
+Files in this directory:
+-----------------------
+
+schema.fbs
+        defines the schema for the user-defined type that we want to serialize
+
+pub.py
+        publishes the serialized topic
+        
+sub.py
+        retrieves the serialized topic
+        
+serialize.py
+        uses the generated flatbuffer logic to serialize and deserialize data
+
+Package installation
+----------------------
+Assuming you already have ZeroMQ (Python binding), we will also need the
+Flatbuffer package available from
+
+           https://google.github.io/flatbuffers/
+
+by doing
+
+           git clone https://github.com/google/flatbuffers.git
+
+You will have to build the package from the source as described here:
+
+           https://google.github.io/flatbuffers/flatbuffers_guide_building.html
+
+Since we will be building it for our Ubuntu VM, use the Unix Makefiles option to cmake.
+You will also need to install cmake, if you do not already have it.
+
+Running the Code
+--------------------
+
+First we will need to convert the schema to the code that our programming language
+can understand. To that end we use the "flatc" compiler from Flatbuffer.  The Flatbuffer
+schema compiler and its options are defined here:
+
+       https://google.github.io/flatbuffers/flatbuffers_guide_using_schema_compiler.html
+       
+We will use the compiler to generate the code that we will use for our program. It needs
+to be run only once unless you change the schema in which case you run it again.
+
+For now, the sample code already has this schema transformed to Python code for us.
+The command we used is:
+
+    flatc --python schema.fbs
+
+The rest of the code is run in the following manner:
+(1) Open two shells in your Ubuntu VM
+(2) In one shell, invoke "python3 sub.py"
+(3) In the second shell, invoke "python3 pub.py"
+     (we will start the sub first so that we don't lose too many initial messages that
+      the publisher will send. Some may still get lost as explained in the ZeroMQ guide)

@@ -1,0 +1,39 @@
+Author: Aniruddha Gokhale
+Created: Spring 2021
+
+This code has been modified from the original pub-sub code
+to showcase the use of poller. It has also been modified
+to make it object oriented by using class in the subscriber.
+
+Here the subscriber contains three SUB sockets, each subscribing to a
+separate topic. The topics are a string tuple of the form "temp:<value>"
+or "humidity:<value>" or "pressure:<value>". Default values are
+temp:70, humidity:50 and pressure:30.
+
+The subscriber uses the poller to poll and understand which socket is
+enabled if the condition matches. If there is data, then a callback is made
+to simply receive the actual info and print it. This is a crude form of the
+"notify" logic that is expected in the Assignment.
+
+Publisher randomly generates some values for the topics. It also randomly
+decides which category of topic it wants to publish.
+
+To run the code locally in your VM, open two bash shells. In one shell, type
+python3 publisher.py and in the second type "python3 subscriber.py".
+
+Subscriber supports command line args to override the default temperature,
+humidty and pressure values of interest.
+
+To try the code on Mininet, run mininet as follows:
+
+sudo mn -x
+
+this will create a two host topology
+
+In h1, run
+   python3 publisher.py
+
+In h2, run
+   python3 subscriber.py 10.0.0.1
+
+

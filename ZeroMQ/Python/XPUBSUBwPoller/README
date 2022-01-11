@@ -1,0 +1,17 @@
+Like XPUBSUB but now we use polling in the proxy so we can
+do something on the proxy side
+
+Run mininet as follows:
+
+sudo mn --topo=tree,depth=1,fanout=3 -x
+
+In h1, run
+   python publisher.py 10.0.0.2
+
+In h2, run
+   python proxy.py
+
+In h3, run
+   python subscriber.py 10.0.0.2
+
+

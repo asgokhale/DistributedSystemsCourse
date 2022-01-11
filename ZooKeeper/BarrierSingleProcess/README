@@ -1,0 +1,43 @@
+This directory contains code to showcase coordination for barrier
+synchronization.  Client applications are emulated as concurrent
+threads inside a driver program. The driver program creates a parent
+barrier znode called "/barrier". Each client thread then creates a
+child to denote itself under the parent znode. When the total number
+of children reaches the expected barrier value, all clients come to
+know this and the program ends after cleaning up everything.
+
+Make sure to have started the ZooKeeper server as follows:
+
+prompt> cd <your distribution of zookeeper>
+
+prompt> ./bin/zkServer.sh start
+
+Then simply run
+
+prompt> python zkbarrier_driver.py
+
+
+General Usage:
+--------------
+
+prompt> python zkbarrier_driver.py -h
+Demo program for ZooKeeper-based Barrier Sync
+usage: zkbarrier_driver.py [-h] [-a ZKIPADDR] [-c NUMCLIENTS] [-p ZKPORT]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ZKIPADDR, --zkIPAddr ZKIPADDR
+                        ZooKeeper server ip address, default 127.0.0.1
+  -c NUMCLIENTS, --numClients NUMCLIENTS
+                        Number of client apps in the barrier, default 5
+  -p ZKPORT, --zkPort ZKPORT
+                        ZooKeeper server port, default 2181
+
+
+Files in the directory:
+-----------------------
+zkbarrier_driver.py  (driver program)
+zkbarrier_app.py (client application program running in a thread)
+
+sample_output.txt  (a sample run output)
+README.txt (this file)

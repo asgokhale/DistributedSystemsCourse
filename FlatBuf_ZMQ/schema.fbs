@@ -1,0 +1,23 @@
+// Author: Aniruddha Gokhale, Vanderbilt University
+// Created: Oct 2019
+// Modified: Feb 2021
+//
+// IDL schema for the data type we will be transferring
+
+// We have to define a namespace under which this schema gets
+// translated to the programming language package we import
+namespace MyPubSub;
+
+// define the user-defined type we want to serialize
+// This can be arbitrarily complex. Here we show a sample
+// which is not overly complex but still showcases the features
+table Topic
+{
+   seq_no: uint32;   // think of this as a seq num in a TCP segment
+   ts: double;          // the remaining fields are arbitrarily chosen
+   name: string;      // to demonstrate that we can serialize
+   data: [uint32];    // different kinds of data types
+}
+
+// indicate what is the top level structure from where the serialization starts
+root_type Topic;

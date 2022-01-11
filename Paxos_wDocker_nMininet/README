@@ -1,0 +1,30 @@
+#
+# Vanderbilt University, Computer Science
+# CS6381: Distributed Computing
+# Author: Aniruddha Gokhale
+# Created: Spring 2021
+#
+# 
+
+===========================================================
+Purpose:
+-------------
+This is a homegrown implementation of a single decree Paxos algorithm. The idea is to use this
+for students to play with as a group and try out different scenarios.
+
+The code can be used in a mininet env, on a laptop or across distributed resources as long as
+network connectivity exists
+===========================================================
+
+Files:
+
+proposer.py
+        Implements the proposer and learner logic
+acceptor.py
+        Implements the acceptor logic
+
+Design
+---------
+
+Uses ZeroMQ and its PUSH-PULL Divide and Conquer pattern. Currently, network delays are emulated
+using sleep () calls. But eventually we would like to use netem or tc.

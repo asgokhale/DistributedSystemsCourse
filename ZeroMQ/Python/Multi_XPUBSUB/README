@@ -1,0 +1,16 @@
+Multiple publisher and subscribers with different topics
+
+Run mininet as follows:
+
+sudo mn -x --topo=tree,depth=1,fanout=3
+
+In h1, run
+   python publisher.py 10.0.0.2
+
+In h2, run
+   python proxy.py
+
+In h3, run
+   python subscriber.py 10.0.0.2
+
+

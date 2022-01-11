@@ -1,0 +1,44 @@
+I am assuming you are trying this out on your Ubuntu guest VM (some
+Linux box)
+
+Download and install the Apache ZooKeeper binary distribution. As of
+Feb 2021, the released version is 3.6.2
+
+To run this sample code, you will need to install the kazoo package.
+
+To install it systemwide (and to prevent some warnings), we do
+
+   sudo -H python3 -m pip install --upgrade kazoo
+
+Start the zookeeper server
+--------------------------------
+First start the zookeeper server. A configuration file is needed for the
+ZooKeeper server to run.
+
+cd <path to your apache-zookeeper-3.6.2-bin> directory
+cd conf
+cp zoo_sample.cfg zoo.cfg
+cd ..
+./bin/zkServer.sh start
+
+(this will start the server as a daemon process in background)
+
+CLI-based client
+------------------
+In a shell,
+
+cd <path to your apache-zookeeper-3.6.2-bin> directory
+./bin/zkCli.sh
+
+(this will start the CLI client connecting to our server on the localhost)
+
+Programmatic Clients (run them in a separate shell)
+---------------------------------------------------------
+SimpleClientServer:
+        Demonstrates a simple sequence of commands that the client executes
+        on the ZooKeeper server. To verify what the program-based client is doing,
+        you an open a shell and run the interactive shell (zkClient.sh) and check
+        the znodes that are getting created in ZooKeeper.
+
+BarrierSingleProcess:
+        Shows a ZooKeeper recipe for barrier synchronization

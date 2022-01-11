@@ -1,0 +1,29 @@
+This directory contains plan socket-based client-server code. Server computes
+factorial. 
+
+* client.cpp is the client side code
+* iterative_server.cpp is the server side code that handles one client at a time.
+* concurrent_server.cpp is the server side code that can handle multiple clients
+   at a time.
+
+Running the code:
+-------------------------
+
+In one shell run either of:
+
+./iterative_server
+
+or
+
+./concurrent_server
+
+and observe the port number on which the server is running.
+
+In another shell, run the client as follows:
+
+./client <server ip address> <server port num> <num> <iterations>
+
+where num is the number whose factorial you are interested in, and iterations
+is how many times the client will send the same request to the server and
+receive a reply. Each iteration is timed and you will see how much time it
+takes to serve each request.

@@ -1,0 +1,81 @@
+Author: Aniruddha Gokhale
+Created: Spring 2022
+
+Purpose:
+
+This directory provides code to demonstrate the integration
+of ZMQ-based synchronous code with Kademlia-based asynchronous
+code. The goal is to showcase different ways to do this starting
+from a very crude approach of using an out-of-band file as a
+rendezvous mechanism between the two code bases.
+
+Note:
+-----
+
+This code can be run locally or in a mininet topology or an actual
+distributed topology. Moreover, we assume that the DHT is already
+ready and that we have set a bunch of key-values in the DHT ecosystem.
+For that, use the Kademlia_DHT scaffolding code to pre-create the DHT
+ecosystem using the kademlia_bootstrap.py and kademlia_set.py files.
+
+Files:
+------
+
+
+---------------------
+Execution on Local VM
+---------------------
+
+First, create the Kademlia DHT ecosystem of 3 nodes as follows in three
+separate bash shells
+
+shell 1> python3 kademlia_bootstrap.py -c
+      This will start the first node on localhost and port 8468
+shell 2> python3 kademlia_bootstrap.py -i localhost -p 8468 -o 8469
+      This will start the second node on port 8469 bootstrapping to
+      the first node.
+shell 3> python3 kademlia_bootstrap.py -i localhost -p 8468 -o 8470
+      This will start the third node on port 8470 bootstrapping to
+      the first node. You could have bootstrapped to the second node.
+
+Now do these one after the other to set some values.
+shell 4> python3 kademlia_set.py -i localhost -p 8468 -o 8500 traffic calm
+shell 4> python3 kademlia_set.py -i localhost -p 8468 -o 8500 weather sunny
+shell 4> python3 kademlia_set.py -i localhost -p 8468 -o 8500 humidity low
+shell 4> python3 kademlia_set.py -i localhost -p 8468 -o 8500 airquality good
+
+To check if these values are set, do the get operation on any of the three
+nodes. Accordingly use the correct port number for the -p option.
+shell 4> python3 kademlia_get.py -i localhost -p 8470 -o 8500 traffic
+shell 4> python3 kademlia_get.py -i localhost -p 8470 -o 8500 weather
+shell 4> python3 kademlia_get.py -i localhost -p 8470 -o 8500 airquality
+shell 4> python3 kademlia_get.py -i localhost -p 8470 -o 8500 humidity
+
+Now we test our Sync-Async code as follows. You could reuse Shell 4
+shell 4> cd ../Sync_Async
+shell 4> python3 zmq_kademlia_driver.py -a localhost -k 8469 -q 8500 -z 5557 parent combined
+
+      In the above we are bootstrapping to a DHT node on localhost on port
+      8469. Our querying side uses port 8500 while the zmq server part
+      uses 5577. We use the "combined" approach where the synch and
+      async code is integrated in one function.
+
+Now start a zmq client in a 5th shell
+shell 5> python3 zmq_client -i localhost -p 5557
+
+      In the above, the zmq client will talk to the zmq server,
+      which is running on 5557.
+
+
+Simplest way to test this is to create a mininet topology as follows:
+
+sudo mn --topo=single,5
+(which will create a single switch and five hosts).
+
+Make sure to bootstrap a DHT ring on nodes h1 to h4. We shall use h5
+for this code. On h5, do the following (either on a xterm for h5 or
+mininet prompt):
+
+mininet>h5 python3 zmq_server_kademlia_client.py -a 10.0.0.2 -k 8468 -q 8877 -z 5557 parent <strategy>
+
+      where strategy is one of file, ipc, thread, combined

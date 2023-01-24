@@ -1,0 +1,64 @@
+For Assignment 1, we will not be using Chameleon cloud. Thus, we expect to use
+two different approaches to testing.
+
+(1) Multiple bash shells on the same virtual machine (e.g., Virtualbox Ubuntu VM)
+-----------------------------------------------------------------------------------------------------------------
+
+Since everything will be deployed on the same machine, the only IP address we will need
+is localhost (also referred to as 127.0.0.1). However, since many publishers and discovery service
+etc will also be running on the same machine, each one will need to use a different port.
+
+Suppose, we want to test our solution with 3 publishers and 4 subscribers, then we will need to
+open 9 bash shells: 3 for publishers, 4 for subscribers, 1 for the discovery service and 1 for the broker.
+In each of the shell start each entity along with the parameters it takes on the command line.
+
+(2) Using Mininet topologies on the VM
+--------------------------------------------------------
+
+Mininet allows us to create virtual hosts each with a different IP address. Thus, we could create
+large enough topologies such that individual entities can be deployed on each host.  In the
+
+I strongly recommend installing Mininet via the git clone and compilation approach. Make sure
+that Python3 is the only python i.e., /usr/bin/python points to python3. You might use
+"sudo update-alternatives" command to set the /usr/bin/python symbolic link to python3.
+
+Download and compile as follows:
+         git clone https://github.com/mininet/mininet
+         ./mininet/util/install.sh -a
+
+After that we are ready to test mininet. Type
+
+sudo mn
+
+to see if it allows you to create a simple topology.
+
+If this works, we are now ready to test a simple 9 host, 1 switch topology
+
+   sudo mn --topo=single,9
+
+will create 9 hosts h1 to h9 connected to a switch s1. The hosts h1 to h9 each will have IP addresses 10.0.0.1, 10.0.0.2 ...
+up to 10.0.0.9. We can run different entities on different hosts. If they share a host, you must use diff port numbers.
+I suggest writing a simple text file like say this:
+
+          h1 python3 PublisherAppln.py <with all the command line params> &
+          h2 python3 PublisherAppln.py <with all the command line params> &
+          h3 python3 PublisherAppln.py <with all the command line params> &
+          h4 python3 SubscriberAppln.py <with all the command line params> &
+          h5 python3 SubscriberAppln.py <with all the command line params> &
+          h6 python3 SubscriberAppln.py <with all the command line params> &
+          h7 python3 SubscriberAppln.py <with all the command line params> &
+          h8 python3 DiscoveryAppln.py < with all the command line params> &
+          h9 python3 BrokerAppln.py < with all the command line params> &
+
+This script can be executed on the mininet> prompt like this:
+
+            mininet> source <your script file>
+
+and let it run for all the iterations of publication. Gather results and plot the graphs.
+
+I can create an even larger and complex topology, here with 27 hosts
+
+      sudo mn --topo=tree,fanout=3,depth=3
+
+and you can write similar script that you can run
+

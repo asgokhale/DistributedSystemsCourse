@@ -1,0 +1,111 @@
+// Course: CS6381 Distributed Systems Principles
+// Instructor: Aniruddha Gokhale
+// Created: Spring 2023
+//
+// Purpose:
+// Describe an initial schema for message exchange with the Discovery service.
+// The goal here is to show things in the simplest way using all strings. But in reality
+// you will need to modify it to use enums and other ProtoBuf types that are supported
+// and that will be needed here.
+
+// Let us use the Version 3 syntax
+syntax = "proto3";
+
+// TO-DO:
+// better to use enums to indicate what role we play
+// Likewise, instead of just comma separated list of topics, maybe a better way to send the topic list
+// Finally, maybe a nested structure that includes the name, IP and port and any additional info about
+// the pub/sub entity here.
+message RegisterReq
+{
+        string role = 1;   // replace it with enum telling if we are pub or sub
+        string topiclist = 2; // comma separated list of topics we publish or consume. Replace it with a better way to send this information
+        string id = 3; // some unique way to identify us (could be hash of name, IP, port, etc) or a nested type
+}
+
+// TO-DO
+// Although the response will be a simple OK or an Exception, maybe an enum field to
+// indicate if it was success or failure, and if failure, a reason (maybe in the form of string).
+message RegisterResp
+{
+        string result = 1; // success or exception. 
+}
+
+
+// TO-DO
+// define a message type that publishers might send to a discovery service
+// to see if the system is all ready and if they can proceed to publish their
+// topics. Accordingly, there will be a req and resp message types.
+message IsReadyReq
+{
+        // we really don't need to send any info
+}
+
+// TO-DO
+// Response to the IsReady request
+message IsReadyResp
+{
+        bool reply = 1; // yes or no
+}
+
+// TO-DO
+// define more message types. For example, a subscriber middleware may want to know
+// all the publishers that publish the topic that subscriber is interested in. In that case,
+// a request will be a single topic or list of topics, and the response will be list of
+// publishers with their name/IP/port for each topic requested. In the Direct approach, the
+// discovery service will send whereabouts of each publisher; in the Broker approach, the
+// whereabouts of the broker will be sent. Accordingly there will be request and response
+// message types
+message LookupPubByTopicReq
+{
+        string topiclist = 1; // modify this appropriately
+}
+
+// TO-DO
+// Have a corresponding response to the lookupPubByTopic request
+// accordingly there will be a response to the above message
+message LookupPubByTopicResp
+{
+    // TO-DO
+    // decide what fields go here. It wil be a list of publishers (with their details)
+}
+
+// Finally, we are going to make a union of all these request and response messages
+
+// TO-DO
+// define an enum of all message types supported on a discovery service.
+// This could be REGISTER_REQ, LOOKUP_PUB_BY_TOPIC, READY
+enum MsgTypes {
+     UNKNOWN = 0;
+     REGISTER = 1;
+     ISREADY = 2;
+     LOOKUP_PUB_BY_TOPIC = 3;
+     LOOKUP_ALL_PUBS = 4;
+     // anything more
+}
+
+// TO-DO
+// Discovery message (one of many)
+message DiscoveryReq
+{
+        MsgTypes msg_type = 1;
+        oneof Content {
+              RegisterReq register_req = 2;
+              IsReadyReq is_ready = 3;
+              LookupPubByTopicReq topic = 4;
+              // add more 
+        }
+}
+
+// Response to discovery req will be similar oneof of the responses.
+message DiscoveryResp
+{
+        MsgTypes msg_type = 1;
+        oneof Content {
+              RegisterResp register_resp = 2;
+              IsReadyResp is_ready = 3;
+              LookupPubByTopicResp resp = 4;
+              // add more 
+        }
+}
+

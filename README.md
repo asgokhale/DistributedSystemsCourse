@@ -73,4 +73,7 @@ ZeroMQ with multicast.
 Status: Still needs work as we haven't gotten things working yet with the
 egpm protocol.
 
+(9) StarterCode_ProgAssign
+This is the code that students use to get started with the programming assignments.
+
 

@@ -13,21 +13,44 @@
 
 import sys
 import time
+import argparse   # argument parser
 import zmq
 from random import randrange
+
+##################################
+# Command line parsing
+##################################
+def parseCmdLineArgs ():
+    # parse the command line
+    parser = argparse.ArgumentParser ()
+
+    # add optional arguments
+    parser.add_argument ("-p", "--port", default="5555", help="Publisher's port: default 5555")
+    
+   # parse the args
+    args = parser.parse_args ()
+
+    return args
+    
+######### main logic #################
+
+# parse the command line args
+args = parseCmdLineArgs ()
 
 # obtain the context
 context = zmq.Context()
 
 # bind to all interfaces
-bind_str = "tcp://*:5555"
+bind_str = "tcp://*:" + args.port
 
 # acquire a publisher type socket
-print ("Publisher binding on all interfaces on port 5555")
+print ("Publisher binding on all interfaces on port {}".format (args.port))
+
+# a PUB socket always binds (best practices of using ZMQ)
 socket = context.socket (zmq.PUB)
 socket.bind (bind_str)
 
-# keep publishing 
+# Generate some random values for the topics and keep publishing 
 while True:
     # decide what topic type we are publishing
     category = randrange (1, 4)

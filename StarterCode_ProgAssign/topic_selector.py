@@ -33,9 +33,10 @@ class TopicSelector ():
   # return a random subset of topics from this list, which becomes our interest
   # A publisher or subscriber application logic will invoke this method to get their
   # interest. 
-  def interest (self):
+  def interest (self, num=1):
     # here we just randomly create a subset from this list and return it
-    return random.sample (self.topiclist, random.randint (1, len (self.topiclist)))
+    #return random.sample (self.topiclist, random.randint (1, len (self.topiclist)))
+    return random.sample (self.topiclist, num)
 
   # generate a publication on a given topic
   def gen_publication (self, topic):

@@ -23,7 +23,7 @@ class CS6381_Subscriber ():
     #################################################################
     def __init__ (self, args):
         # arguments
-        self.addr = args.addr   # ip addr of publisher
+        self.addr = args.addr   # ip addr:port of publisher
         self.temp = args.temp # temperature we are interested in
         self.pressure = args.pressure  # pressure we are interested in
         self.humidity = args.humidity # humidity value we are interested in
@@ -52,20 +52,32 @@ class CS6381_Subscriber ():
         print ("Subscriber::configure - get the poller object")
         self.poller = zmq.Poller ()
 
-        # now let us obtain our sockets all of which are of SUB type
+        # now let us obtain our sockets all of which are of SUB type.
+        # Note that I could have used a single socket and subscribed
+        # to the topics on the same socket. But I just wanted to show
+        # how the poller can poll multiple sockets.
         print ("Subscriber::configure - obtain the three SUB sockets")
         self.temp_socket = self.context.socket (zmq.SUB)
         self.humidity_socket = self.context.socket (zmq.SUB)
         self.pressure_socket = self.context.socket (zmq.SUB)
 
         # connect all our sockets to the publisher
-        print ("Subscriber::configure - connect the SUB sockets to publisher")
-        connect_str = "tcp://" + self.addr + ":5555"
-        self.temp_socket.connect (connect_str)
-        self.humidity_socket.connect (connect_str)
-        self.pressure_socket.connect (connect_str)
+        print ("Subscriber::configure - connect the SUB sockets to one of more publishers")
+        # note that the "addr" field could be comma separate list of IP:port pairs. So
+        # let us first get a list of these addresses
+        addr_list = self.addr.split (",")
+        print ("Subscriber::configure - connect the SUB sockets to these pubs: {}".format (addr_list))
+       
+        for addr in addr_list:
+          connect_str = "tcp://" + addr
+          self.temp_socket.connect (connect_str)
+          self.humidity_socket.connect (connect_str)
+          self.pressure_socket.connect (connect_str)
         
-        # set filters on the sockets
+        # set filters on the sockets. Here we are setting a filter on
+        # topic name followed by a : delimiter. But we could very
+        # well have subscribed to just the topic name and that too
+        # using binary bytes.
         filter = "temp:" + self.temp
         print ("Subscriber:configure - subscribing to {}".format (filter))
         self.temp_socket.setsockopt_string(zmq.SUBSCRIBE, filter)
@@ -133,7 +145,7 @@ def parseCmdLineArgs ():
     parser = argparse.ArgumentParser ()
 
     # add optional arguments
-    parser.add_argument ("-a", "--addr", default="localhost", help="Publisher IP address, default localhost")
+    parser.add_argument ("-a", "--addr", default="localhost:5555", help="Comma separated IP:port tuples for all the publishers whom we want to connect to. Default is one publisher at localhost:5555")
     parser.add_argument ("-t", "--temp", default="70", help="Temperature, default 70 F")
     parser.add_argument ("-p", "--pressure", default="30", help="Pressure, default 30")
     parser.add_argument ("-m", "--humidity", default="50", help="Humidity, default 50")

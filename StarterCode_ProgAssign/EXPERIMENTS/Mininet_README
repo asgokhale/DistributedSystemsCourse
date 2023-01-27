@@ -1,0 +1,19 @@
+# Note: I could not include these comments in the commands file
+# Hence, had to create this separate README
+#
+# now run each instance. The > redirects standard output to the
+# named file after it, and then the 2> redirects the standard error
+# to the arg named after it, which happens to the same file name
+# as where we redirected the standard output. The final & is to
+# push the command into the background and let it run.
+#
+# Note that because we are now running these applications on
+# Mininet hosts, each host has a different IP address and so
+# we need to provide the appropriate params
+#
+# Here, I am going to create a topology like this:
+# sudo mn --topo=single,10
+#
+# You can use such a logic and additional params to create
+# all kinds of mininet topologies and experimental scenarios.
+

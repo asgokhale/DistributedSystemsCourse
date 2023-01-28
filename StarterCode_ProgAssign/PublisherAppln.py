@@ -295,7 +295,7 @@ class PublisherAppln ():
         return 0
       
       else:
-        self.logger.debug ("PublisherAppln::register_response - registration is a failure with reason {}".format (response.reason))
+        self.logger.debug ("PublisherAppln::register_response - registration is a failure with reason {}".format (reg_resp.reason))
         raise ValueError ("Publisher needs to have unique id")
 
     except Exception as e:

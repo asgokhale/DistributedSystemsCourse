@@ -1,0 +1,54 @@
+This is not quite a starter code but it provides some utilities helpful in setting up the
+experiments
+
+Files in this directory:
+
+exp_generator.py
+        This is the code we will need to run to generate the scripts we need to run
+        the experiments in Mininet. This code will be further extended to run in the
+        cloud Kubernetes experiment, if and when it is ready. We might create a
+        new file or just enhance this.
+
+        Run this file using python3 exp_generator.py. You can pass the -h option to see
+        the command line. The currently supported options are:
+
+        -b <bits> for bits of hash function (48 by default)
+        -D <num of DHT nodes> i.e., how many DHT nodes in the ring
+        -P <num pubs> for number of publishers in the system
+        -S <num subs> for number of subscribers in the system
+        -d <base port for discovery> used as the starting port number in case multiple discovery
+                                                     services are hosted on same node
+        -p <base port for publisher> used as the starting port number in case multiple publishers
+                                                     are hosted on same node
+        -t <mininet topology> where we can specify things like "single,5" or "linear,4" or
+                                           "tree,fanout=3,depth=3"
+        -f <experiment file> where the entire deployment of the experiment is generated so that all
+                                         you can do is source this file on the mininet prompt
+        -j <json file> where the details of our DHT ring are saved in jsonified form that can then
+                              be used by the discovery nodes as well as publishers and subscribers
+                              who can decide to reach a random DHT node and let the algorithm take
+                              care of routing
+
+collision_test.py
+        Provides a configurable collision testing capability where we can test out
+        how many bit hash function yields no collisions for the randomly generated
+        strings we pass to the hash function. Here we have settled on sha256, which
+        is available from the hashlib secure hash algorithms package.  The strings we
+        pass to the hash function are similar to what we expect to pass in the DHT
+        PA2 assignment, where we pass something like
+
+            disc3:10.0.0.5:5555
+
+        that represents a discovery service with id 3 running on Mininet host 10.0.0.5
+        and port 5555. All such strings are randomly generated based on parameters
+        we pass (each parameter has a default value)
+
+        Based on the many different times we have tested this logic, we have found that
+        48 bits hash does not give rise to collisions. This code allows us to test for hash
+        values ranging from 16 bits to 64 bits with 8 bit increments.
+
+hashring_test.py
+        Do not worry about this file. I was testing another hash function which uses the
+        hashring package but felt it may be a bit complex to use. So did not pursue it.
+        But I left this file there in case anyone later wants to use it for something,
+        e.g., final project.

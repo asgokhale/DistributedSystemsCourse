@@ -1,0 +1,3 @@
+# Note that if everything is running locally, then you cannot reuse
+# the same port number. Thus, we see that each publisher is running on a
+# different port number. But everyone is using "localhost" as their IP address.

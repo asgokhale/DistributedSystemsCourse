@@ -158,7 +158,7 @@ class ExperimentGenerator ():
     if prefix == "disc":
       port = self.disc_base_port + len (self.disc_dict[host])
     elif prefix == "pub":
-      port = self.pub_base_port + len (self.pub_dict[host])
+      port = self.pub_base_port - len (self.pub_dict[host])
     else:
       port = None
 
@@ -280,13 +280,18 @@ class ExperimentGenerator ():
           # generate intested in topics in the range of 5 to 9 because
           # our topic helper currently has 9 topics in it.
           num_topics = random.randint (5, 9)
+          frequency = random.choice ([0.25, 0.5, 0.75, 1, 2, 3, 4])
+          iterations = random.choice ([1000, 2000, 3000])
 
           # build the command line
           cmdline = host + " python3 PublisherAppln.py " + \
             "-n " + nested_dict["id"]  + " " + \
             "-j " + self.json_file + " " + \
             "-a " + str(nested_dict["IP"]) + " " + \
+            "-p " + str(nested_dict["port"]) + " " + \
             "-T " + str(num_topics) + " " + \
+            "-f " + str(frequency) + " " + \
+            "-i " + str(iterations) + " " + \
             "> " + nested_dict["id"] + ".out 2>&1 &\n"
           f.write (cmdline)
 

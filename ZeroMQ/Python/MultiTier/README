@@ -1,0 +1,54 @@
+This code demonstrates the use of REQ-REP sockets used in a multi tier
+architecture, where the original client sends some dummy requests to
+its next tier, which then forwards to the next and so on. On the return path
+acknowledgments are sent back.
+
+Some of this will be useful in our understanding of how messages are
+propagated from one node to another say in a DHT ring.
+
+We can test different scenarios to see if we can get this work as expected.
+If everything is on localhost, make sure to use use different port numbers
+for each tier server. If on different hosts on mininet, they can each keep
+using the default 4444 port number but still make sure that the names
+used are unique so that we can be sure from the printed output that the
+chain is working correctly.
+
+For both cases below, we need say 7 hosts if everything needs to work
+on different nodes. To that end, we can do "sudo mn --topo=single,7"
+
+------------------------------------------------
+Case 1:  Shared last tier
+------------------------------------------------
+Mininet host names shown above or below the peer's name
+
+h1                     h3                              h5                
+C1 ------------> Tier1.1 ----------------> Tier 2.1
+                                                                   \
+                                                                    \
+                                                                      Tier3.1
+                                                                    /    h7
+                                                                   /
+C2-------------> Tier1.2 ----------------> Tier 2.2
+h2                     h4                              h6
+
+-->You can add more clients
+
+
+
+------------------------------------------------
+Case 2:  Shared intermediate tier
+------------------------------------------------
+Note that because ZMQ load balances requests, Tier2.1 will
+relay incoming requests in round robin to the third tier servers.
+
+h1                     h3                         h6
+C1 ------------> Tier1.1                 Tier 3.1
+                                 \              /
+                                  \            /
+                                    Tier2.1
+                                  /    h5    \
+                                 /              \                                                    
+C2-------------> Tier1.2                 Tier 3.2
+h2                     h4                          h7
+
+-->You can add more clients

@@ -1,0 +1,10 @@
+h3 python3 tier_server.py -n tier1.1 -u 10.0.0.5:4444 > T11.out 2>&1 &
+h4 python3 tier_server.py -n tier1.2 -u 10.0.0.6:4444 > T12.out 2>&1 &
+h5 python3 tier_server.py -n tier2.1 -u 10.0.0.7:4444 > T21.out 2>&1 &
+h6 python3 tier_server.py -n tier2.2 -u 10.0.0.7:4444 > T21.out 2>&1 &
+h7 python3 tier_server.py -n tier3.1 > T31.out 2>&1 &
+h1 python3 client.py -n C1 -u 10.0.0.3:4444 -i 200 > C1.out 2>&1 &
+h2 python3 client.py -n C2 -u 10.0.0.4:4444 -i 200 > C2.out 2>&1 &
+h1 python3 client.py -n C3 -u 10.0.0.3:4444 -i 200 > C3.out 2>&1 &
+h2 python3 client.py -n C4 -u 10.0.0.4:4444 -i 200 > C4.out 2>&1 &
+

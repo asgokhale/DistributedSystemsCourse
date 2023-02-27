@@ -31,7 +31,7 @@ def parseCmdLineArgs ():
 
   parser.add_argument ("-i", "--iters", type=int, default=25, help="Number of iterations, default = 25")
 
-  parser.add_argument ("-u", "--url", default="localhost:4444", help="URL of the next tier we connect to, default=localhost:4444")
+  parser.add_argument ("-u", "--url", default="localhost:4444", help="URL of the next tier we connect to or comma separated list of tiers to connect to, default=localhost:4444")
     
   parser.add_argument ("-l", "--loglevel", type=int, default=logging.DEBUG, choices=[logging.DEBUG,logging.INFO,logging.WARNING,logging.ERROR,logging.CRITICAL], help="logging level, choices 10,20,30,40,50: default 10=logging.DEBUG")
   
@@ -71,8 +71,10 @@ def main ():
     req = context.socket (zmq.REQ)
 
     logger.debug ("Connect to {}".format (args.url))
-    connect_str = "tcp://" + args.url
-    req.connect (connect_str)
+    connect_str_list = args.url.split (",")
+    for item in connect_str_list:
+      connect_str = "tcp://" + item
+      req.connect (connect_str)
     
     # Now send a dummy req and wait for response from the chain.
     for i in range (args.iters):

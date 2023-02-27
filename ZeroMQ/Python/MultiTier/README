@@ -52,3 +52,21 @@ C2-------------> Tier1.2                 Tier 3.2
 h2                     h4                          h7
 
 -->You can add more clients
+
+-------------------------------------------------------------------
+Case 3:  Fanout from the client plus shared tier
+-------------------------------------------------------------------
+Like case 2 but now clients have a fanout and ZMQ will
+send requests in round robin fashion to tier1 servers.
+
+             h3                         h6
+         Tier1.1                 Tier 3.1
+       /            \              /
+     /               \            /
+C1                   Tier2.1
+h1  \              /    h5    \
+       \            /              \                          
+         Tier1.2                 Tier 3.2
+            h4                          h7
+
+-->You can add more clients (our case 3 has 4 clients)

@@ -1,0 +1,35 @@
+---
+# CS4287-5287, CS6381
+# Author: Aniruddha Gokhale
+# Created: Fall 2020
+# Modified: Spring 2023
+#
+#
+# This is a declarative approach to describe a Kubernetes based
+# service for one or more deployed (i.e., a group) of zookeeper pods
+#
+# See https://kubernetes.io/docs/concepts/services-networking/service/ for more details
+
+apiVersion: v1   # as required by K8s
+kind: Service  # this is a service declaration pod.
+metadata:
+  # give some name. Naming convention uses the following rules:
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#rfc-1035-label-names
+  name: zk-svr-svc  # Because this is a service, K8s will change this to all caps attaching the IP addr and port of the corresponding deployment that clients can then use.
+spec:
+      # In our case we are not going to access zookeeper from outside the cloud
+      # but rather everything will be running inside including our pub, sub
+      # discovery, broker etc. So we will use the default ClusterIP instead of
+      # NodePort.
+  type: ClusterIP  # No need to specify this as it is default. But it could be NodePort
+  selector:
+    app: zkApp     # used to match the pod(s) that run the actual zookeeper
+  ports:
+    - name: zk-port    # not needed, but I have added this as we could access port via such a name
+      protocol: TCP     # this is default (so not needed either)
+      port: 2181  # port to which clients will make a request on
+      targetPort: 2181   # this is the port on which the pod/container is internally actually listening, and so whenever a client request hits the port above, it will get forwarded to target port. If not specified, it is same as port.
+      # Note that if our service was exposed to outside world, we will need to
+      # specify a nodePort which has to be between 30000 and 32767 and then
+      # we would need to use the floating IP addr to reach this service.
+...

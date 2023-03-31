@@ -1,0 +1,10 @@
+#
+# This yaml file is used to create a namespace
+# 
+apiVersion: v1
+kind: Namespace
+metadata:
+  # name your namespace, say by your name or some unique string
+  # these strings cannot contain uppercase letters. See
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-label-names
+  name: agokhale # I am using my name to create a namespace for me in the shared cluster. Others should do the same by creating a unique string and then all pods and services will be deployed in your namespace.

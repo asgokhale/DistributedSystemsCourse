@@ -1,0 +1,195 @@
+---
+# CS6381
+# Author: Aniruddha Gokhale
+# Created: Spring 2023
+#
+#
+# This is a declarative approach to describe a Kubernetes based
+# service and deployment of zookeeper
+#
+# See https://kubernetes.io/docs/concepts/workloads/controllers/deployment/ for more details.
+
+# A BIG difference from the ZooKeeper example is that here we need to run
+# multiple instances of the multi tier server. We could technically do this
+# via replicas but then these replicas are essentially load balanced. We do not
+# want this behavior but rather each should exist on its own.  K8s' StatefulSet
+# may provide us this capability but then discovery etc become onerous.
+#
+# So we are adopting the approach that each tier server will have its own
+# service and corresponding deployment declaration
+#
+# Say we want to implement this scenario from our zeromq scaffolding code
+#
+#------------------------------------------------
+#Case 1:  Shared last tier
+#------------------------------------------------
+# Mininet host names shown above or below the peer's name
+# In K8s, there will not be such mininet hosts but pods
+# which hopefully are going to be different pods since the
+# servers are going to be listening on 4444
+#
+#h1                     h3                              h5                
+#C1 ------------> Tier1.1 ----------------> Tier 2.1
+#                                                                   \
+#                                                                    \
+#                                                                      Tier3.1
+#                                                                    /    h7
+#                                                                   /
+#C2-------------> Tier1.2 ----------------> Tier 2.2
+#h2                     h4                              h6
+
+#+++++++++++++++++++++++++++++
+# Thus we need 5 diff deployment specs
+#+++++++++++++++++++++++++++++
+#
+---
+apiVersion: apps/v1  # as required by K8s
+kind: Deployment         # Our pod is of the deployment type
+metadata:
+  name: mt-1-1-deploy  # Name of the zookeeper deployment pod 
+  labels:
+    app: mt-1-1-App  # used to create a name for this pod when it runs
+spec:                     # This is the specification where we can even put the number of replicas
+  replicas: 1             # default is 1
+  selector:
+    matchLabels:
+      app: mt-1-1-App     # Used for matching a service to its pod(s).
+  minReadySeconds: 5  # if anything crashes before 5 secs, the deployment is not
+                          # considered as ready and available. Default value is 0
+  template:               # Specified info needed to run the pod and what runs in the pod
+    metadata:
+      labels:
+        app: mt-1-1-App        # some label to give to this pod (see the matching label above)
+    spec:                 # actual specification of the pod
+      hostname: mt-1-1-host   # we ask for a special host name so it available to other frontends
+      containers:
+        - name: mt-1-1-container   # container name. Not needed/
+          image: 192.168.2.230:5000/agokhale/mtier_zmq # this is the image in private registry that I pushed my image onto on Master 3 machine. But it could a URL where the image is at some remote location or if no URL specified, then is searched on hub.docker.com
+          ports:            
+            - containerPort: 4444  # port on which the container listens on
+          imagePullPolicy: IfNotPresent   # The following forces the node to pull the image if not locally available.
+          # The following is the command line to run our multitier server according to the diagram above. Note that in our dockerfile, we used the working directory as /work
+          command: ["python3"]
+          args: ["tier.py", "-n", "tier1_1", "-p", "4444", "-u", "$(MT_2_1_SVC_SERVICE_HOST):$(MT_2_1_SVC_SERVICE_PORT)", "-l", "10"]  # arguments
+#      restartPolicy: Always # this is the default. So we are not specifying
+---
+apiVersion: apps/v1  # as required by K8s
+kind: Deployment         # Our pod is of the deployment type
+metadata:
+  name: mt-1-2-deploy  # Name of the zookeeper deployment pod 
+  labels:
+    app: mt-1-2-App  # used to create a name for this pod when it runs
+spec:                     # This is the specification where we can even put the number of replicas
+  replicas: 1             # default is 1
+  selector:
+    matchLabels:
+      app: mt-1-2-App     # Used for matching a service to its pod(s).
+  minReadySeconds: 5  # if anything crashes before 5 secs, the deployment is not
+                          # considered as ready and available. Default value is 0
+  template:               # Specified info needed to run the pod and what runs in the pod
+    metadata:
+      labels:
+        app: mt-1-2-App        # some label to give to this pod (see the matching label above)
+    spec:                 # actual specification of the pod
+      hostname: mt-1-2-host   # we ask for a special host name so it available to other frontends
+      containers:
+        - name: mt-1-2-container   # container name. Not needed/
+          image: 192.168.2.230:5000/agokhale/mtier_zmq # this is the image in private registry that I pushed my image onto on Master 3 machine. But it could a URL where the image is at some remote location or if no URL specified, then is searched on hub.docker.com
+          ports:            
+            - containerPort: 4444  # port on which the container listens on
+          imagePullPolicy: IfNotPresent   # The following forces the node to pull the image if not locally available.
+          # The following is the command line to run our multitier server according to the diagram above. Note that in our dockerfile, we used the working directory as /work
+          command: ["python3"]
+          args: ["tier.py", "-n", "tier1_2", "-p", "4444", "-u", "$(MT_2_2_SVC_SERVICE_HOST):$(MT_2_2_SVC_SERVICE_PORT)", "-l", "10"]  # arguments
+#      restartPolicy: Always # this is the default. So we are not specifying
+---
+apiVersion: apps/v1  # as required by K8s
+kind: Deployment         # Our pod is of the deployment type
+metadata:
+  name: mt-2-1-deploy  # Name of the zookeeper deployment pod 
+  labels:
+    app: mt-2-1-App  # used to create a name for this pod when it runs
+spec:                     # This is the specification where we can even put the number of replicas
+  replicas: 1             # default is 1
+  selector:
+    matchLabels:
+      app: mt-2-1-App     # Used for matching a service to its pod(s).
+  minReadySeconds: 5  # if anything crashes before 5 secs, the deployment is not
+                          # considered as ready and available. Default value is 0
+  template:               # Specified info needed to run the pod and what runs in the pod
+    metadata:
+      labels:
+        app: mt-2-1-App        # some label to give to this pod (see the matching label above)
+    spec:                 # actual specification of the pod
+      hostname: mt-2-1-host   # we ask for a special host name so it available to other frontends
+      containers:
+        - name: mt-2-1-container   # container name. Not needed/
+          image: 192.168.2.230:5000/agokhale/mtier_zmq # this is the image in private registry that I pushed my image onto on Master 3 machine. But it could a URL where the image is at some remote location or if no URL specified, then is searched on hub.docker.com
+          ports:            
+            - containerPort: 4444  # port on which the container listens on
+          imagePullPolicy: IfNotPresent   # The following forces the node to pull the image if not locally available.
+          # The following is the command line to run our multitier server according to the diagram above. Note that in our dockerfile, we used the working directory as /work
+          command: ["python3"]
+          args: ["tier.py", "-n", "tier2_1", "-p", "4444", "-u", "$(MT_3_1_SVC_SERVICE_HOST):$(MT_3_1_SVC_SERVICE_PORT)", "-l", "10"]  # arguments
+#      restartPolicy: Always # this is the default. So we are not specifying
+---
+apiVersion: apps/v1  # as required by K8s
+kind: Deployment         # Our pod is of the deployment type
+metadata:
+  name: mt-2-2-deploy  # Name of the zookeeper deployment pod 
+  labels:
+    app: mt-2-2-App  # used to create a name for this pod when it runs
+spec:                     # This is the specification where we can even put the number of replicas
+  replicas: 1             # default is 1
+  selector:
+    matchLabels:
+      app: mt-2-2-App     # Used for matching a service to its pod(s).
+  minReadySeconds: 5  # if anything crashes before 5 secs, the deployment is not
+                          # considered as ready and available. Default value is 0
+  template:               # Specified info needed to run the pod and what runs in the pod
+    metadata:
+      labels:
+        app: mt-2-2-App        # some label to give to this pod (see the matching label above)
+    spec:                 # actual specification of the pod
+      hostname: mt-2-2-host   # we ask for a special host name so it available to other frontends
+      containers:
+        - name: mt-2-2-container   # container name. Not needed/
+          image: 192.168.2.230:5000/agokhale/mtier_zmq # this is the image in private registry that I pushed my image onto on Master 3 machine. But it could a URL where the image is at some remote location or if no URL specified, then is searched on hub.docker.com
+          ports:            
+            - containerPort: 4444  # port on which the container listens on
+          imagePullPolicy: IfNotPresent   # The following forces the node to pull the image if not locally available.
+          # The following is the command line to run our multitier server according to the diagram above. Note that in our dockerfile, we used the working directory as /work
+          command: ["python3"]
+          args: ["tier.py", "-n", "tier2_2", "-p", "4444", "-u", "$(MT_3_1_SVC_SERVICE_HOST):$(MT_3_1_SVC_SERVICE_PORT)", "-l", "10"]  # arguments
+#      restartPolicy: Always # this is the default. So we are not specifying
+---
+apiVersion: apps/v1  # as required by K8s
+kind: Deployment         # Our pod is of the deployment type
+metadata:
+  name: mt-3-1-deploy  # Name of the zookeeper deployment pod 
+  labels:
+    app: mt-3-1-App  # used to create a name for this pod when it runs
+spec:                     # This is the specification where we can even put the number of replicas
+  replicas: 1             # default is 1
+  selector:
+    matchLabels:
+      app: mt-3-1-App     # Used for matching a service to its pod(s).
+  minReadySeconds: 5  # if anything crashes before 5 secs, the deployment is not
+                          # considered as ready and available. Default value is 0
+  template:               # Specified info needed to run the pod and what runs in the pod
+    metadata:
+      labels:
+        app: mt-3-1-App        # some label to give to this pod (see the matching label above)
+    spec:                 # actual specification of the pod
+      hostname: mt-3-1-host   # we ask for a special host name so it available to other frontends
+      containers:
+        - name: mt-3-1-container   # container name. Not needed/
+          image: 192.168.2.230:5000/agokhale/mtier_zmq # this is the image in private registry that I pushed my image onto on Master 3 machine. But it could a URL where the image is at some remote location or if no URL specified, then is searched on hub.docker.com
+          ports:            
+            - containerPort: 4444  # port on which the container listens on
+          imagePullPolicy: IfNotPresent   # The following forces the node to pull the image if not locally available.
+          # The following is the command line to run our multitier server according to the diagram above. Note that in our dockerfile, we used the working directory as /work
+          command: ["python3"]
+          args: ["tier.py", "-n", "tier3_1", "-p", "4444", "-l", "10"]  # arguments
+#      restartPolicy: Always # this is the default. So we are not specifying
+...

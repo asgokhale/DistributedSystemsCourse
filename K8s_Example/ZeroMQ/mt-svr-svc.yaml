@@ -1,0 +1,134 @@
+---
+# CS6381
+# Author: Aniruddha Gokhale
+# Created: Spring 2023
+#
+# This is a declarative approach to describe a Kubernetes based
+# service for one or more deployed (i.e., a group) of zookeeper pods
+#
+# See https://kubernetes.io/docs/concepts/services-networking/service/ for more details
+
+# A BIG difference from the ZooKeeper example is that here we need to run
+# multiple instances of the multi tier server. We could technically do this
+# via replicas but then these replicas are essentially load balanced. We do not
+# want this behavior but rather each should exist on its own.  K8s' StatefulSet
+# may provide us this capability but then discovery etc become onerous.
+#
+# So we are adopting the approach that each tier server will have its own
+# service and corresponding pod declaration
+#
+# Say we want to implement this scenario from our zeromq scaffolding code
+#
+#------------------------------------------------
+#Case 1:  Shared last tier
+#------------------------------------------------
+# Mininet host names shown above or below the peer's name
+# In K8s, there will not be such mininet hosts but pods
+# which hopefully are going to be different pods since the
+# servers are going to be listening on 4444
+#
+#h1                     h3                              h5                
+#C1 ------------> Tier1.1 ----------------> Tier 2.1
+#                                                                   \
+#                                                                    \
+#                                                                      Tier3.1
+#                                                                    /    h7
+#                                                                   /
+#C2-------------> Tier1.2 ----------------> Tier 2.2
+#h2                     h4                              h6
+
+#+++++++++++++++++++++++++++++
+# Thus we need 5 diff service declarations
+#+++++++++++++++++++++++++++++
+#
+---
+apiVersion: v1   # as required by K8s
+kind: Service  # this is a service declaration pod.
+metadata:
+  # give some name. Naming convention uses the following rules:
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#rfc-1035-label-names
+  name: mt-1-1-svc  # Because this is a service, K8s will change this to all caps attaching the IP addr and port of the corresponding deployment that clients can then use.
+spec:
+  # Service accessible inside the cloud; hence ClusterIP
+  type: ClusterIP  # No need to specify this as it is default. But it could be NodePort
+  selector:
+    app: mt-1-1-App     # used to match the pod(s) that run the actual zookeeper
+  ports:
+    - name: mt-1-1-port    # not needed, but I have added this as we could access port via such a name
+      protocol: TCP     # this is default (so not needed either)
+      port: 4444  # port to which clients will make a request on
+      targetPort: 4444   # this is the port on which the pod/container is internally actually listening, and so whenever a client request hits the port above, it will get forwarded to target port. If not specified, it is same as port.
+
+---
+apiVersion: v1   # as required by K8s
+kind: Service  # this is a service declaration pod.
+metadata:
+  # give some name. Naming convention uses the following rules:
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#rfc-1035-label-names
+  name: mt-1-2-svc  # Because this is a service, K8s will change this to all caps attaching the IP addr and port of the corresponding deployment that clients can then use.
+spec:
+  # Service accessible inside the cloud; hence ClusterIP
+  type: ClusterIP  # No need to specify this as it is default. But it could be NodePort
+  selector:
+    app: mt-1-2-App     # used to match the pod(s) that run the actual zookeeper
+  ports:
+    - name: mt-1-2-port    # not needed, but I have added this as we could access port via such a name
+      protocol: TCP     # this is default (so not needed either)
+      port: 4444  # port to which clients will make a request on
+      targetPort: 4444   # this is the port on which the pod/container is internally actually listening, and so whenever a client request hits the port above, it will get forwarded to target port. If not specified, it is same as port.
+
+---
+apiVersion: v1   # as required by K8s
+kind: Service  # this is a service declaration pod.
+metadata:
+  # give some name. Naming convention uses the following rules:
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#rfc-1035-label-names
+  name: mt-2-1-svc  # Because this is a service, K8s will change this to all caps attaching the IP addr and port of the corresponding deployment that clients can then use.
+spec:
+  # Service accessible inside the cloud; hence ClusterIP
+  type: ClusterIP  # No need to specify this as it is default. But it could be NodePort
+  selector:
+    app: mt-2-1-App     # used to match the pod(s) that run the actual zookeeper
+  ports:
+    - name: mt-2-1-port    # not needed, but I have added this as we could access port via such a name
+      protocol: TCP     # this is default (so not needed either)
+      port: 4444  # port to which clients will make a request on
+      targetPort: 4444   # this is the port on which the pod/container is internally actually listening, and so whenever a client request hits the port above, it will get forwarded to target port. If not specified, it is same as port.
+
+---
+apiVersion: v1   # as required by K8s
+kind: Service  # this is a service declaration pod.
+metadata:
+  # give some name. Naming convention uses the following rules:
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#rfc-1035-label-names
+  name: mt-2-2-svc  # Because this is a service, K8s will change this to all caps attaching the IP addr and port of the corresponding deployment that clients can then use.
+spec:
+  # Service accessible inside the cloud; hence ClusterIP
+  type: ClusterIP  # No need to specify this as it is default. But it could be NodePort
+  selector:
+    app: mt-2-2-App     # used to match the pod(s) that run the actual zookeeper
+  ports:
+    - name: mt-2-2-port    # not needed, but I have added this as we could access port via such a name
+      protocol: TCP     # this is default (so not needed either)
+      port: 4444  # port to which clients will make a request on
+      targetPort: 4444   # this is the port on which the pod/container is internally actually listening, and so whenever a client request hits the port above, it will get forwarded to target port. If not specified, it is same as port.
+
+---
+apiVersion: v1   # as required by K8s
+kind: Service  # this is a service declaration pod.
+metadata:
+  # give some name. Naming convention uses the following rules:
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#rfc-1035-label-names
+  name: mt-3-1-svc  # Because this is a service, K8s will change this to all caps attaching the IP addr and port of the corresponding deployment that clients can then use.
+spec:
+  # Service accessible inside the cloud; hence ClusterIP
+  type: ClusterIP  # No need to specify this as it is default. But it could be NodePort
+  selector:
+    app: mt-3-1-App     # used to match the pod(s) that run the actual zookeeper
+  ports:
+    - name: mt-3-1-port    # not needed, but I have added this as we could access port via such a name
+      protocol: TCP     # this is default (so not needed either)
+      port: 4444  # port to which clients will make a request on
+      targetPort: 4444   # this is the port on which the pod/container is internally actually listening, and so whenever a client request hits the port above, it will get forwarded to target port. If not specified, it is same as port.
+
+---

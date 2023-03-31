@@ -1,0 +1,57 @@
+# Author: Aniruddha Gokhale
+# Vanderbilt University
+# Created: Spring 2023
+#
+# This dockerfile creates an image to run ZooKeeper
+# (Since the CLI is also in the distribution, we can run
+# it too using this image)
+#
+# The FROM keyword tells the build process what the base image is
+# from which to start building. We use Ubuntu 20.04
+FROM ubuntu:focal  
+#
+# The RUN directive is used to customize the image with
+# whatever packages we want to install as well as any other
+# modifications, configurations we want to do
+#
+# Install the needed packages. The "-y" eliminates the interactive response
+# We first install the key packages we need like Java and Python3
+RUN apt-get -y update && apt-get install -y default-jdk python3
+#
+# Then we install Pip3 upgrading it to the latest version in case any python
+# packages are needed to be installed
+RUN apt-get install -y python3-dev python3-pip
+RUN python3 -m pip install --upgrade pip
+#
+# Now we install some utilities just in case we need to debug from
+# inside the pod/container.
+RUN apt-get install -y net-tools wget dnsutils iputils-ping iputils-tracepath iputils-arping iputils-clockdiff
+#
+#
+# Tell Docker what is going to be our working directory instead of the / directory
+# by default. By specifying the directory, if one does not exist, it will be created.
+WORKDIR /work
+#
+# Now download and install zookeeper (which will be in our working directory)
+#
+# Here we are hardcoding the download mirror, which was provided when
+# we attempted to manually download it
+RUN wget https://dlcdn.apache.org/zookeeper/zookeeper-3.7.1/apache-zookeeper-3.7.1-bin.tar.gz
+#
+# Uncompress and untar the distribution
+RUN zcat apache-zookeeper-3.7.1-bin.tar.gz | tar xpof -
+#
+# Now just create a sample config file
+RUN cp apache-zookeeper-3.7.1-bin/conf/zoo_sample.cfg apache-zookeeper-3.7.1-bin/conf/zoo.cfg
+#
+# Now indicate what port is being used by ZK
+EXPOSE 2181/tcp
+#
+#
+# If we want to pass any environment variables, it can be done
+# via the ENV directive. But we don't have one here.
+#
+# If we were to run Docker images natively, then one could provide the
+# command to run when the docker image is executed. But here we skip
+# that step and instead let K8s take care of it
+

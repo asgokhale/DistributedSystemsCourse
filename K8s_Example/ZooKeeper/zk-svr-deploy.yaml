@@ -1,0 +1,45 @@
+---
+# CS4287-5287, CS6381
+# Author: Aniruddha Gokhale
+# Created: Fall 2020
+# Modified: Spring 2023
+#
+#
+# This is a declarative approach to describe a Kubernetes based
+# service and deployment of zookeeper
+#
+# See https://kubernetes.io/docs/concepts/workloads/controllers/deployment/ for more details.
+
+apiVersion: apps/v1  # as required by K8s
+kind: Deployment         # Our pod is of the deployment type
+metadata:
+  name: zk-svr-deploy  # Name of the zookeeper deployment pod 
+  labels:
+    app: zkApp  # used to create a name for this pod when it runs
+spec:                     # This is the specification where we can even put the number of replicas
+  replicas: 1             # default is 1
+  selector:
+    matchLabels:
+      app: zkApp     # Used for matching a service to its pod(s).
+  minReadySeconds: 5  # if anything crashes before 5 secs, the deployment is not
+                          # considered as ready and available. Default value is 0
+  template:               # Specified info needed to run the pod and what runs in the pod
+    metadata:
+      labels:
+        app: zkApp        # some label to give to this pod (see the matching label above)
+    spec:                 # actual specification of the pod
+      hostname: zk-svr-host   # we ask for a special host name so it available to other frontends
+      containers:
+        - name: zk-svr-container   # container name. Not needed/
+          image: 192.168.2.230:5000/agokhale/zk-server # this is the image in private registry that I pushed my image onto on Master 3 machine. But it could a URL where the image is at some remote location or if no URL specified, then is searched on hub.docker.com
+          ports:            
+            - containerPort: 2181  # port on which the container listens on
+          imagePullPolicy: IfNotPresent   # The following forces the node to pull the image if not locally available.
+          # The following is the command line to run zookeeper. Note that in our dockerfile, we used the working directory as /work
+          command: ["/work/apache-zookeeper-3.7.1-bin/bin/zkServer.sh"]
+          args: ["start-foreground"]  # arguments
+      restartPolicy: Always  # this is the default i.e., if pod crashes and because this is a service, we restart the pod
+        # we can force k8s to run a pod on the specified host or let K8s select an appropriate host
+      nodeSelector:  # say we force K8s to run this on the following node (always)
+        kubernetes.io/hostname: distsys-worker5
+...

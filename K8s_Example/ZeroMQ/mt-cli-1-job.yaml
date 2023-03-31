@@ -1,0 +1,32 @@
+---
+# CS4287-5287, CS6381
+# Author: Aniruddha Gokhale
+# Created: Spring 2023
+#
+#
+# This is a declarative approach to describe a Kubernetes based
+# service and deployment of zookeeper
+#
+# See https://kubernetes.io/docs/concepts/workloads/controllers/job/ for more details
+
+# We create a job pod for the client side functionality since
+# this is something that does its job and then terminates.
+# Since this is interactive code, we will be using the kubectl exec command
+# to "log into" the pod and then run the command manually. Otherwise, a
+# non interactive code can provide the command and args to run as shown
+# below. 
+
+apiVersion: batch/v1  # this is what K8s requires us to use
+kind: Job  # this is a job type pod
+metadata:
+  name: mt-cli-1-job  # name of our job pod
+spec:
+  template:
+    spec:
+      containers:  # we are running one container inside this pod
+      - name: mt-cli-1-container
+        image: 192.168.2.230:5000/agokhale/mtier_zmq  # image in private registry
+        command: ["python3"]   # let us run this client for many iterations
+        args: ["client.py", "-n", "client1", "-i", "10000", "-l", "10", "-u", "$(MT_1_1_SVC_SERVICE_HOST):$(MT_1_1_SVC_SERVICE_PORT)"]   
+      restartPolicy: Never  # do not restart if the pod crashes
+  backoffLimit: 4  # indicates how many times to try creating
